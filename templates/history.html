@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Meldungen
+{% endblock %}
+
+{% block main %}
+    <form class="historyTableForm" action="/history" method="post">
+        {{signals_df | safe}}
+    </form>
+{% endblock %}

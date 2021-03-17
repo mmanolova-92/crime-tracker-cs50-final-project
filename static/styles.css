@@ -1,0 +1,384 @@
+html {
+    height: 100%;
+}
+
+body {
+   background-image: linear-gradient(#80d0c7, #13547a)!important;
+   color: #ffffff;
+   opacity: 0.8;
+   height: 100%;
+   margin: 0;
+   background-repeat: no-repeat;
+   background-attachment: fixed;
+}
+
+nav {
+    height: 85px;
+    font-family: "Arial";
+    font-size: 25px!important;
+    color: #ffffff!important;
+}
+
+.nav-brand {
+    padding-top: 0px !important;
+}
+
+.nav-link {
+    padding-top: 0px !important;
+    font-family: "Arial";
+    font-size: 18px !important;
+    color: #D42229 !important;
+}
+
+.logo-image{
+    overflow: hidden;
+    transform: scale(0.85, 0.85);
+    -ms-transform: scale(0.85, 0.85);
+    -webkit-transform: scale(0.85, 0.85);
+}
+
+#site_container {
+    position: absolute;
+    width: 100%;
+    padding: 0px!important;
+    margin: 0px;
+    max-width:100%;
+}
+
+#frontImages {
+    position: relative;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content:center;
+    margin-top: 30px;
+}
+
+.loginForm, .registerForm {
+    display: flex;
+    margin: 5% auto;
+    padding: 5%;
+    width: 30%;
+    flex-direction: column;
+    flex-wrap: wrap;
+    position: relative;
+    justify-content: center;
+    border: 2px solid #D42229;
+}
+
+.registerForm {
+    margin-top: 2% !important;
+}
+
+.form-group{
+    display: inline-block;
+}
+
+.historyTableForm {
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    margin: 5% auto;
+}
+
+.historyTable {
+    width: 75%;
+    border-radius: 30px;
+    border-collapse: collapse;
+    font-style: normal;
+    overflow: hidden;
+    box-shadow: 2px 2px 2px #000000;
+
+}
+
+.historyTable th, tr, td{
+    padding: 10px;
+    text-align: center;
+}
+
+.historyTable th {
+    background: #FFF
+}
+
+.historyTable tr:nth-child(odd) {
+    background: #d9d9d9
+}
+
+.historyTable tr:nth-child(even) {
+    background: #FFF
+}
+
+#first-section{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 50px 100px !important;
+    margin: 0px;
+    max-width:100%;
+    display: flex;
+}
+
+#map-container{
+    position:relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-auto-rows: repeat(5, 1fr);
+    justify-items: center;
+    align-items:center;
+}
+
+#map {
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    max-height: 600px;
+    grid-column: 1 / 5;
+    grid-row: 1 / span 5
+}
+
+.mapboxgl-canvas {
+    position: relative;
+    float: left;
+    /*width: 20%;*/
+    height: auto;
+    border-radius: 10px;
+}
+
+#crimesLog {
+    position: relative;
+    border-radius: 15px;
+    overflow-y: auto;
+    max-height: 600px;
+    padding-left: 10px;
+    grid-column: 5 / span 1;
+    grid-row: 1 / span 5
+}
+
+#crime_card{
+    margin-bottom: 0.5rem!important;
+}
+
+#user {
+    width: 7.5%;
+    height: 7.5%;
+    margin-left: 50%;
+}
+
+#news {
+    width: 10%;
+    height: 10%;
+    margin-left: 47.5%;
+}
+
+.openBtn {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    width: 25%;
+    height: 100%;
+    margin-top: 15px;
+    right: -40px;
+    grid-column: 4;
+    grid-row: 1;
+    align-self: center;
+    outline: none !important;
+    border: none !important;
+}
+
+.openBtn:hover,
+.openBtn:active {
+    outline: none !important;
+    border: none !important;
+    background-color: transparent;
+}
+
+.openButton {
+    outline: none !important;
+    border: none !important;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.openButton button:hover,
+.openButton button:active {
+    outline: none !important;
+    border: none !important;
+    background-color: transparent;
+}
+
+.openButton img {
+    position: relative;
+    width: 90%;
+    outline: none !important;
+    border: none !important;
+    background-color: transparent;
+    filter: drop-shadow(0px 0px 10px red);
+}
+
+.openButton img:hover,
+.openButton img:active {
+    outline: none !important;
+    border: none !important;
+    background-color: transparent;
+}
+
+.popup {
+    position: relative;
+    text-align: center;
+    width: 100%;
+}
+
+.formPopup {
+    display: none;
+    position: fixed;
+    left: 47.5%;
+    top: -1%;
+    transform: translate(-50%, 5%);
+    border-radius: 25px;
+    border: 1px solid white;
+    z-index: 9;
+}
+
+.formContainer {
+    max-width: 400px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 25px;
+    border: 1px solid white;
+    filter: drop-shadow(0px 0px 10px gray);
+}
+
+.formContainer input[type=datetime-local],
+.formContainer select,
+.formContainer textarea,
+.formContainer input[type=text]{
+    width: 90%;
+    padding: 15px;
+    margin: 5px 0 10px 0;
+    border: none;
+    background: #eee;
+}
+
+.formContainer input[type=datetime-local]:focus,
+.formContainer select:focus,
+.formContainer textarea:focus
+.formContainer input[type=text]:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+.formContainer .btn {
+    padding: 12px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    width: 90%;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.formContainer .cancel {
+    width: 90%;
+    background-color: #cc0000;
+}
+
+.formContainer .btn:hover {
+    opacity: 1;
+}
+
+#chartsContainer{
+    width: 100%;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto auto;
+    column-gap: 100px;
+    padding-left: 50px;
+    padding-right: 50px;
+    row-gap: 50px;
+}
+
+.chartCanvas{
+    position: relative;
+    max-width: 100%;
+    max-height: 300px;
+}
+
+
+.card-header {
+    font-size:0.75vw;
+    padding: 0.5rem!important;
+}
+
+.card-body{
+    padding: 0.5rem!important;
+}
+
+.card-title {
+    font-size:1vw;
+}
+.card-text {
+    font-size:0.75vw;
+}
+
+.marker {
+  background-size: cover;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.mapboxgl-popup {
+  max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotateZ(360deg);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.section-divider {
+    position: relative;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    z-index: 0;
+    transform: skewY(0deg);
+    transform-origin: top right;
+}
+
+#second-section{
+    position: relative;
+    margin-top: 50px;
+    width: 100%;
+    height: 500px;
+}

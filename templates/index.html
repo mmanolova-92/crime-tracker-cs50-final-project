@@ -1,0 +1,436 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+    <div id='first-section'>
+      <div id='map-container'>
+        <div id='map'></div>
+        <div class="openBtn">
+          <button alt="alternative text" title="Straftat melden" class="openButton" onclick="openForm()">
+            <img src="/static/Light_1.gif">
+          </button>
+        </div>
+        <div id='crimesLog'>
+           {% for crime in reports_news %}
+            <div class="card bg-light mb-3" style="max-width: 18rem;" id="crime_card">
+                <div class="card-header"> {{ crime['date'] }} {{ crime['time'] }}
+                {% if crime['source'] == "user" %}
+                  <img alt="alternative text" title="User signal" id="user" src="../static/user.png">
+                {% else %}
+                  <a href ={{ crime['link'] }}><img alt="alternative text" title="News report" id="news" src="../static/news.png"></a>
+                {% endif %}
+                </div>
+                <div class="card-body">
+                   <h5 class="card-title"> {{ crime['location'] }} </h5>
+                   <p class="card-text"> {{ crime['title'] }} </p>
+                </div>
+            </div>
+           {% endfor %}
+        </div>
+        <div class="popup">
+          <div class="formPopup" id="popupForm">
+            <form action="/" class="formContainer" method="post">
+              <h3>Straftat anzeigen</h3>
+              <label for="crimeLocation">
+                <strong>Sie haben den folgenden Standort ausgewählt:</strong>
+              </label>
+              <input type="text" id="crimeLocation" name="crimeLocation">
+              <input type="hidden" id="crimeLatLng" name="crimeLatLng">
+              <input type="hidden" id="crimeDistrict" name="crimeDistrict">
+
+              <label for="crimeTime">
+                <strong>Wann hat die Straftat stattgefunden?</strong>
+              </label>
+              <input type="datetime-local" id="crimeTime" name="crimeTime">
+              <label for="typeCrime">
+                <strong>Welche Art von Straftat haben Sie gesehen?</strong>
+              </label>
+              <select id="typeCrime" name="typeCrime" required>
+                <option value="Betrug">Betrug</option>
+                <option value="Brandstiftung">Brandstiftung</option>
+                <option value="Geiselnahme">Geiselnahme</option>
+                <option value="Geldfälschung">Geldfälschung</option>
+                <option value="Körperverletzung">Körperverletzung</option>
+                <option value="Mord">Mord</option>
+                <option value="Nötigung">Nötigung</option>
+                <option value="Rassenangriff">Rassenangriff</option>
+                <option value="Raub">Raub</option>
+                <option value="Unterschlagung">Unterschlagung</option>
+                <option value="Vandalismus">Vandalismus</option>
+                <option value="Vergewaltigung">Vergewaltigung</option>
+                <option value="Verkehrsunfall">Verkehrsunfall</option>
+                <option value="Verschleppung">Verschleppung</option>
+              </select>
+              <label for="crimeDescription">
+                <strong>Geben Sie bitte eine kurze Beschreibung der Straftat ein.</strong>
+              </label>
+              <textarea id="crimeDescription" name="crimeDescription" rows="2" cols="50"></textarea>
+
+              <button type="submit" class="btn">Senden</button>
+              <button type="button" class="btn cancel" onclick="closeForm()">Schließen</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section>
+      <div class="section-divider">
+      </div>
+    </section>
+    <div id="second-section">
+    <div id="chartsContainer">
+        <canvas class="chartCanvas" id="doughnutChart"></canvas>
+        <canvas class="chartCanvas" id="barChart"></canvas>
+        <canvas class="chartCanvas" id="barChart2"></canvas>
+        <canvas class="chartCanvas" id="polarArea"></canvas>
+      </div>
+    </div>
+    <script>
+
+      mapboxgl.accessToken = 'pk.eyJ1IjoiYXNha2FrdXNoZXYiLCJhIjoiY2tmd25uZW9uMDFobTJxcndkdGNkYmwyZSJ9.Lm3qs2XtCG34WVXNOhWHgw';
+
+      var tot_crimeType = JSON.parse('{{tot_crimeType | tojson}}');
+      var tot_crimeType_crimeN_list = [];
+      var tot_crimeType_crimeU_list = [];
+      var tot_crimeType_crimeType_list = [];
+
+      for(var i = 0; i < tot_crimeType.length; i++) {
+        tot_crimeType_crimeN_list.push(tot_crimeType[i].crimeN);
+        tot_crimeType_crimeU_list.push(tot_crimeType[i].crimeU);
+        tot_crimeType_crimeType_list.push(tot_crimeType[i].crimeType);
+      }
+
+      var tot_date = JSON.parse('{{tot_date | tojson}}');
+      var tot_date_date_list = [];
+      var tot_date_crimeN_list = [];
+      var tot_date_crimeU_list = [];
+
+      for(var j = 0; j < tot_date.length; j++) {
+        tot_date_date_list.push(tot_date[j].date);
+        tot_date_crimeN_list.push(tot_date[j].crimeN);
+        tot_date_crimeU_list.push(tot_date[j].crimeU);
+      }
+
+      var tot_location = JSON.parse('{{tot_location | tojson}}');
+      var tot_location_crimeN_list = [];
+      var tot_location_crimeU_list = [];
+      var tot_location_location_list = [];
+
+      for(var x = 0; x < tot_location.length; x++) {
+        tot_location_crimeN_list.push(tot_location[x].crimeN);
+        tot_location_crimeU_list.push(tot_location[x].crimeU);
+        tot_location_location_list.push(tot_location[x].location);
+      }
+
+      var date = new Date();
+      date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+
+      var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v9',
+        center: [13.395129, 52.516257],
+        zoom: 10
+      });
+
+      var geojson = {
+        type: 'FeatureCollection',
+        features: []
+      };
+
+      var reports = JSON.parse('{{reports_news | tojson}}');
+
+      for(var r = 0; r < reports.length; r++) {
+
+        var latitude = parseFloat(reports[r].latLong.split(',')[0]);
+        var longitude = parseFloat(reports[r].latLong.split(',')[1]);
+
+        if(reports[r].source == 'user') {
+
+          geojson.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [longitude, latitude]
+            },
+            properties: {
+              source: 'user',
+              title: reports[r].title,
+              location: reports[r].location,
+              crime: reports[r].crimeType,
+              date: reports[r].date,
+              time: reports[r].time,
+            }
+          });
+
+        } else {
+
+          geojson.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [longitude, latitude]
+            },
+            properties: {
+              title: reports[r].title,
+              location: reports[r].location,
+              crime: reports[r].crimeType,
+              date: reports[r].date,
+              time: reports[r].time,
+            }
+          });
+
+        }
+
+      }
+
+      function openForm() {
+
+        alert("Bitte wählen sie den Ort, wo die Straftat stattfand.");
+
+        map.on('click', function(placeMarker) {
+
+          var coordinates = placeMarker.lngLat;
+
+          var coordinatesString = coordinates.lat.toString() + ', ' + coordinates.lng.toString();
+
+          document.getElementById('crimeLatLng').value = coordinatesString;
+
+          document.getElementById("popupForm").style.display = "block";
+
+          document.getElementById('crimeTime').value = date.toISOString().slice(0,16)
+
+          geojson.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [coordinates.lng, coordinates.lat]
+            },
+            properties: {
+              source: 'user',
+              title: document.getElementById("crimeDescription").value,
+              location: '',
+              crime: document.getElementById("typeCrime").value,
+              date: document.getElementById('crimeTime').value
+            }
+          });
+
+          var url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' + coordinates.lng.toString() + ', ' + coordinates.lat.toString() + '.json?access_token=' + mapboxgl.accessToken;
+
+          fetch(url)
+            .then(function(response) {
+              return response.json();
+            })
+            .then(function(jsonResponse) {
+              address = jsonResponse.features[0].place_name;
+              district = jsonResponse.features[2].text;
+              document.getElementById('crimeLocation').value = address;
+              document.getElementById('crimeDistrict').value = district;
+            });
+        });
+
+      }
+
+      function closeForm() {
+        document.getElementById("popupForm").style.display = 'none';
+      }
+
+      geojson.features.forEach(function(marker) {
+
+        var el = document.createElement('div');
+        el.className = 'marker';
+
+        if(marker.properties.source == 'user') {
+
+          el.style.backgroundImage = 'url(../static/marker-user.png)';
+
+        } else {
+
+          el.style.backgroundImage = 'url(../static/marker.png)';
+
+        }
+
+        new mapboxgl.Marker(el)
+        .setLngLat(marker.geometry.coordinates)
+        .setPopup(new mapboxgl.Popup({ offset: 25 })
+          .setHTML('<h6>' + marker.properties.title + '</h6><p>' + marker.properties.location + '</p><p>'+ marker.properties.crime + '</p><p>' + marker.properties.date + ', ' + marker.properties.time + '</p>'))
+        .addTo(map);
+
+      });
+
+      window.onload = function() {
+
+        Chart.defaults.global.defaultFontSize = 30;
+        Chart.defaults.global.defaultFontStyle = 'bold';
+        Chart.defaults.global.defaultFontColor = "#fff";
+
+        var ctx = document.getElementById('barChart').getContext('2d');barChart = new Chart(ctx, {
+          type: 'bar',
+          responsive: true,
+          data: {
+              labels:  tot_date_date_list,
+              datasets: [
+                {
+                  label: "Nachrichtenberichte",
+                  backgroundColor: 'rgba(239, 96, 121, 0.7)',
+                  fillColor: 'rgba(239, 96, 121, 0.7)',
+                  data: tot_date_crimeN_list
+                },
+                {
+                  label: "Benutzerberichte",
+                  backgroundColor: 'rgba(82, 176, 247, 0.7)',
+                  fillColor: 'rgba(82, 176, 247, 0.7)',
+                  data: tot_date_crimeU_list
+                }
+              ]
+          },
+          options: {
+              scales: {
+                  yAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                      display: false
+                    }
+                  }],
+                  xAxes: [{
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                      display: false
+                    }
+                  }]
+              }
+          }
+        });
+
+        var ctx = document.getElementById('doughnutChart').getContext('2d');
+        var doughnutChart = new Chart(ctx, {
+          type: 'doughnut',
+          responsive: true,
+          data: {
+              labels: ['Anzahl der gemeldeten Straftaten'],
+              datasets: [{
+                  label: 'Anzahl der gemeldeten Straftaten',
+                  data: [reports.length],
+                  backgroundColor: 'rgba(239, 96, 121, 0.7)',
+                  borderColor: 'rgba(239, 96, 121, 0.7)',
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              scales: {
+                  yAxes: [{
+                      ticks: {
+                        display: false,
+                        beginAtZero: true
+                      },
+                      gridLines: {
+                        display: false
+                      }
+
+                  }]
+              }
+          }
+        });
+
+
+        var ctx = document.getElementById('barChart2').getContext('2d');
+        var barChart2 = new Chart(ctx, {
+          type: 'bar',
+          responsive: true,
+          data: {
+              labels:  tot_crimeType_crimeType_list,
+              datasets: [
+                {
+                  label: "Nachrichtenberichte",
+                  backgroundColor: 'rgba(239, 96, 121, 0.7)',
+                  fillColor: 'rgba(239, 96, 121, 0.7)',
+                  data: tot_crimeType_crimeN_list
+                },
+                {
+                  label: "Benutzerberichte",
+                  backgroundColor: 'rgba(82, 176, 247, 0.7)',
+                  fillColor: 'rgba(82, 176, 247, 0.7)',
+                  data: tot_crimeType_crimeU_list
+                }
+              ]
+          },
+          options: {
+              scales: {
+                stacked: true,
+                ticks: {
+                    beginAtZero: true
+                },
+                xAxes: [{
+                  stacked: true,
+                  ticks: {
+                      beginAtZero: true
+                  },
+                  gridLines: {
+                    display: false
+                  }
+                }]
+              }
+          }
+        });
+
+        var polarAreaColors = []
+
+        for (var v = 0; v < tot_location_location_list.length; v++) {
+          polarAreaColors.push("#"+((1<<24)*Math.random()|0).toString(16))
+        }
+
+        var ctx = document.getElementById('polarArea').getContext('2d');
+        var polarArea = new Chart(ctx, {
+          type: 'polarArea',
+          responsive: true,
+          // maintainAspectRatio: false,
+          data: {
+              labels:  tot_location_location_list,
+              datasets: [
+                {
+                  label: "Nachrichtenberichte",
+                  backgroundColor: polarAreaColors,
+                  fillColor: '#ffffff',
+                  data: tot_location_crimeN_list
+                }
+              ]
+          },
+          options: {
+             plugins: {
+              labels: [{
+                render: 'label',
+                position: 'outside'
+              }]
+            },
+            legend: {
+              position:'bottom'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        display: false
+                    },
+                    gridLines: {
+                      display: false
+                    }
+
+                }]
+            },
+            scale: {
+              display: false
+            }
+          }
+        });
+      }
+    </script>
+
+{% endblock %}
