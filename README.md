@@ -92,5 +92,5 @@ $ flask run
 ```
 
 ## Contributors
-Alex Sakakushev - alexsak
+Alex Sakakushev - alexsak <br/>
 Manuela Manolova - mmanolova-92
