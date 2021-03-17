@@ -23,7 +23,7 @@ In addition to the web map visualizing the location of the crime reports, there 
 In case the user has reported any crime activity in the web application, an overview table with their reports can be viewed in a separate page.
 
 ## Project structure
-[final_project](./final_project)
+[crime-tracker-cs50-final-project](./final_project)
    * [application.py](./final_project/application.py)
    * [crimes.json](./final_project/crimes.json)
    * [database.db](./final_project/database.db)
