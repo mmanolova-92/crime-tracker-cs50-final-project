@@ -78,19 +78,19 @@ The project is created by using the following frameworks:
 ## Setup
 Ther CS50 IDE was used for developing and testing the web application. Before running the project, the Python libraries specified in the "requirements.txt" file should be installed:
 
+```bash
 $ cd project
-
 $ pip install -r requirements.txt
+```
 
 Then follow the instructions to set up and run the project:
 
+```bash
 $ set FLASK_APPLICATION=application.py
-
 $ set DEBUG=1
-
 $ flask run
+```
 
 ## Contributors
 Alex Sakakushev - alexsak
-
 Manuela Manolova - mmanolova-92
